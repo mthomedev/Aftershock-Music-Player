@@ -222,7 +222,10 @@ input[type="range"] {
   flex-shrink: 0;
   margin-right: 0.4rem;
   opacity: 0;
-  transition: opacity 0.15s, color 0.15s, background 0.15s;
+  transition:
+    opacity 0.15s,
+    color 0.15s,
+    background 0.15s;
 }
 .playlist-list__item:hover .playlist-list__delete,
 .playlist-list__item:focus-within .playlist-list__delete {
