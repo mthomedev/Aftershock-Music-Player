@@ -1,4 +1,4 @@
-# Tonal — Music Player
+# Aftershock — Music Player
 
 A fully functional music player clone, built with semantic HTML, `id` reserved for JavaScript, and `class` for styling.
 
