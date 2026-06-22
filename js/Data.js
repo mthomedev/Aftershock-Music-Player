@@ -10,10 +10,33 @@
 // primeira faixa) é o Main.js, para não duplicar a lógica.
 export async function fetchTracks() {
   const response = await fetch("./assets/songs.json");
-
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
-  }
-
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
   return response.json();
+}
+
+const lyricsCache = new Map();
+
+export async function fetchLyrics(artist, title) {
+  const key = `${artist}__${title}`;
+
+  if (lyricsCache.has(key)) return lyricsCache.get(key);
+
+  try {
+    const res = await fetch(
+      `https://lrclib.net/api/search?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`,
+    );
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    const match = data[0];
+    if (!match) return null;
+
+    // Prefere letra plana, senão limpa a sincronizada
+    const raw = match.plainLyrics ?? match.syncedLyrics ?? null;
+    const lyrics = raw ? raw.replace(/\[\d{2}:\d{2}\.\d{2}\]\s*/g, "") : null;
+    lyricsCache.set(key, lyrics);
+    return lyrics;
+  } catch {
+    return null;
+  }
 }

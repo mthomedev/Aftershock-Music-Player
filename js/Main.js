@@ -7,13 +7,14 @@
 import { runtime, FALLBACK_COVER } from "./Store.js";
 import { state, saveState } from "./State.js";
 import * as dom from "./Dom.js";
-import { fetchTracks } from "./Data.js";
+import { fetchTracks, fetchLyrics } from "./Data.js";
 import { getGreeting } from "./Utils.js";
 import { renderTrackList, applyFilters } from "./TrackList.js";
 import { renderPlaylists } from "./Playlists.js";
 import { renderQueue } from "./Queue.js";
 import { applyTheme } from "./Theme.js";
 import { loadTrack, syncLikeButton, updateMediaSession } from "./Player.js";
+import "./Modal.js";
 
 // Estes módulos só precisam ser importados pelo efeito colateral:
 // eles registram seus próprios event listeners ao serem carregados.

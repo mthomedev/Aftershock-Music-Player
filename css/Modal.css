@@ -1,0 +1,291 @@
+/* ── Modal Overlay ───────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 260px;
+  right: 0;
+  bottom: var(--player-height);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+/* Quando o painel de fila está aberto */
+.app:has(#queue-panel:not([hidden])) ~ * .modal-overlay,
+body:has(#queue-panel:not([hidden])) .modal-overlay {
+  right: 300px;
+}
+
+/* ── Modal Container ─────────────────────────────────────── */
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 1060px;
+  max-height: 82vh;
+  border-radius: 24px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  grid-template-rows: 1fr;
+
+  background: rgba(18, 14, 10, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+}
+
+/* Glow ambiente da capa do álbum */
+.modal::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(
+    --modal-glow,
+    radial-gradient(
+      ellipse at 30% 0%,
+      rgba(165, 28, 48, 0.35) 0%,
+      transparent 60%
+    )
+  );
+  pointer-events: none;
+  z-index: 0;
+  transition: background 0.8s ease;
+}
+
+/* ── Close Button ────────────────────────────────────────── */
+.modal__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+.modal__close:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  transform: scale(1.08);
+}
+
+/* ── Cover ───────────────────────────────────────────────── */
+.modal__cover-wrap {
+  grid-row: 1 / -1;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.modal__cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Fade da capa para o corpo */
+.modal__cover-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    transparent 60%,
+    rgba(12, 9, 6, 0.6) 100%
+  );
+  pointer-events: none;
+}
+
+/* ── Body ────────────────────────────────────────────────── */
+.modal__body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Info Section ────────────────────────────────────────── */
+.modal__info {
+  padding: 2rem 2rem 1.25rem;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.modal__lyrics-label {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 0.75rem;
+  opacity: 0.85;
+}
+
+.modal__track-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 0 0.2rem;
+  color: #fff;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.modal__track-artist {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0;
+}
+
+.modal__track-album {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.35);
+  margin: 0.25rem 0 0;
+}
+
+/* ── Lyrics ──────────────────────────────────────────────── */
+.modal__lyrics-wrap {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 2rem 2rem;
+
+  /* Fade suave nas bordas */
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 6%,
+    black 90%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 6%,
+    black 90%,
+    transparent 100%
+  );
+}
+
+.modal__lyrics-wrap::-webkit-scrollbar {
+  width: 3px;
+}
+.modal__lyrics-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modal__lyrics-wrap::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+}
+
+.modal__lyrics {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 2;
+  color: rgba(255, 255, 255, 0.55);
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.modal__lyrics-loading,
+.modal__lyrics-empty {
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 0.88rem;
+  font-style: italic;
+  margin: 0;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* ── Cover Button ────────────────────────────────────────── */
+.player__cover-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  border-radius: 4px;
+}
+.player__cover-button:hover .player__cover {
+  opacity: 0.8;
+}
+
+/* ── Animações ───────────────────────────────────────────── */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-overlay:not([hidden]) .modal {
+  animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── Tema claro ──────────────────────────────────────────── */
+[data-theme="light"] .modal {
+  background: rgba(240, 234, 220, 0.82);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+[data-theme="light"] .modal__close {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.45);
+}
+[data-theme="light"] .modal__track-title {
+  color: #1a1208;
+}
+[data-theme="light"] .modal__track-artist {
+  color: rgba(30, 20, 8, 0.65);
+}
+[data-theme="light"] .modal__track-album {
+  color: rgba(30, 20, 8, 0.38);
+}
+[data-theme="light"] .modal__info {
+  border-bottom-color: rgba(0, 0, 0, 0.07);
+}
+[data-theme="light"] .modal__lyrics {
+  color: rgba(20, 14, 5, 0.55);
+}
+[data-theme="light"] .modal__cover-wrap::after {
+  background: linear-gradient(
+    to right,
+    transparent 60%,
+    rgba(240, 234, 220, 0.7) 100%
+  );
+}
