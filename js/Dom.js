@@ -34,14 +34,22 @@ export const searchForm = document.getElementById("search-form");
 export const queuePanel = document.getElementById("queue-panel");
 export const queueListEl = document.getElementById("queue-list");
 export const queueEmptyStateEl = document.getElementById("queue-empty-state");
-export const queueToggleButton = document.getElementById(
-  "queue-toggle-button",
-);
-export const clearQueueButton = document.getElementById(
-  "clear-queue-button",
-);
+export const queueToggleButton = document.getElementById("queue-toggle-button");
+export const clearQueueButton = document.getElementById("clear-queue-button");
 
-export const newPlaylistButton = document.getElementById(
-  "new-playlist-button",
-);
+export const newPlaylistButton = document.getElementById("new-playlist-button");
 export const toastEl = document.getElementById("toast");
+
+// Modal
+export const nowPlayingModal = document.getElementById("now-playing-modal");
+export const modalClose = document.getElementById("modal-close");
+export const openModalButton = document.getElementById("open-modal-button");
+export const modalCover = document.getElementById("modal-cover");
+export const modalTrackTitle = document.getElementById("modal-track-title");
+export const modalTrackArtist = document.getElementById("modal-track-artist");
+export const modalTrackAlbum = document.getElementById("modal-track-album");
+export const modalLyrics = document.getElementById("modal-lyrics");
+export const modalLyricsLoading = document.getElementById(
+  "modal-lyrics-loading",
+);
+export const modalLyricsEmpty = document.getElementById("modal-lyrics-empty");
