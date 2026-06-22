@@ -1,0 +1,71 @@
+.queue-panel {
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border);
+  padding: 1.5rem 1.25rem;
+  overflow-y: auto;
+}
+.queue-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+}
+.queue-panel__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.queue-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: queue;
+}
+.queue-list__item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0.25rem;
+  border-bottom: 1px solid var(--border);
+  cursor: grab;
+}
+.queue-list__item--dragging {
+  opacity: 0.4;
+}
+.queue-list__cover {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+.queue-list__info {
+  min-width: 0;
+  flex: 1;
+}
+.queue-list__name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.queue-list__artist {
+  font-size: 0.75rem;
+  color: var(--ink-dim);
+  margin: 0;
+}
+.queue-list__remove {
+  background: none;
+  border: none;
+  color: var(--ink-faint);
+  font-size: 0.9rem;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+.queue-list__remove:hover {
+  color: var(--danger);
+  background: var(--bg-hover);
+}
