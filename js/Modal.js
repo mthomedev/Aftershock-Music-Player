@@ -61,6 +61,7 @@ function showLyrics(result) {
   dom.modalLyricsLoading.hidden = true;
   syncedLines = [];
   activeLine = -1;
+  dom.modalSyncIndicator.hidden = true;
 
   if (!result || (!result.synced && !result.plain)) {
     dom.modalLyricsEmpty.hidden = false;
@@ -73,6 +74,7 @@ function showLyrics(result) {
 
   if (result.synced) {
     syncedLines = parseLRC(result.synced);
+    dom.modalSyncIndicator.hidden = false;
     dom.modalLyrics.innerHTML = syncedLines
       .map(
         (line, i) =>

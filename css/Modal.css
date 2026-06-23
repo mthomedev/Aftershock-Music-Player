@@ -356,3 +356,39 @@ body:has(#queue-panel:not([hidden])) .modal-overlay {
     rgba(240, 234, 220, 0.7) 100%
   );
 }
+
+.modal__sync-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.modal__sync-indicator span {
+  display: inline-block;
+  width: 2px;
+  height: 8px;
+  border-radius: 1px;
+  background: var(--accent);
+  animation: sync-pulse 0.9s ease-in-out infinite alternate;
+}
+.modal__sync-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+  height: 12px;
+}
+.modal__sync-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes sync-pulse {
+  0% {
+    opacity: 0.3;
+    transform: scaleY(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+.modal__sync-indicator--paused span {
+  animation-play-state: paused;
+}

@@ -61,6 +61,12 @@ export function playAudio() {
   dom.playButton.setAttribute("aria-label", "Pause");
   if ("mediaSession" in navigator)
     navigator.mediaSession.playbackState = "playing";
+  document
+    .getElementById("modal-sync-indicator")
+    ?.classList.remove("modal__sync-indicator--paused");
+  document
+    .querySelector(".track-list__row--playing")
+    ?.classList.remove("track-list__row--paused");
 }
 
 export function pauseAudio() {
@@ -69,6 +75,12 @@ export function pauseAudio() {
   dom.playButton.setAttribute("aria-label", "Play");
   if ("mediaSession" in navigator)
     navigator.mediaSession.playbackState = "paused";
+  document
+    .getElementById("modal-sync-indicator")
+    ?.classList.add("modal__sync-indicator--paused");
+  document
+    .querySelector(".track-list__row--playing")
+    ?.classList.add("track-list__row--paused");
 }
 
 export function togglePlay() {
