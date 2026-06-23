@@ -46,6 +46,7 @@ loadTracks();
 function init() {
   dom.heroTitleEl.textContent = getGreeting();
   dom.volumeBar.value = state.volume;
+  dom.volumeBar.style.setProperty("--fill", state.volume + "%");
   dom.audio.volume = state.volume / 100;
 
   applyTheme();

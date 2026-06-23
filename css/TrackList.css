@@ -127,3 +127,58 @@
   border-top: 1px solid var(--border);
   margin: 0.25rem 0;
 }
+
+.track-list__row--playing .track-list__index {
+  font-size: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.track-list__row--playing .track-list__index::after {
+  content: "";
+  display: flex;
+  width: 14px;
+  height: 14px;
+  background-image:
+    linear-gradient(var(--accent), var(--accent)),
+    linear-gradient(var(--accent), var(--accent)),
+    linear-gradient(var(--accent), var(--accent));
+  background-size:
+    3px 50%,
+    3px 100%,
+    3px 70%;
+  background-position:
+    0px bottom,
+    5px bottom,
+    10px bottom;
+  background-repeat: no-repeat;
+  animation: eq 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes eq {
+  0% {
+    background-size:
+      3px 50%,
+      3px 100%,
+      3px 70%;
+  }
+  33% {
+    background-size:
+      3px 100%,
+      3px 40%,
+      3px 90%;
+  }
+  66% {
+    background-size:
+      3px 40%,
+      3px 90%,
+      3px 50%;
+  }
+  100% {
+    background-size:
+      3px 90%,
+      3px 60%,
+      3px 100%;
+  }
+}

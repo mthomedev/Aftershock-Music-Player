@@ -282,6 +282,14 @@
         <button class="modal__close" id="modal-close" aria-label="Fechar">
           ✕
         </button>
+        <button
+          class="modal__queue"
+          id="modal-queue-button"
+          type="button"
+          aria-label="Abrir fila"
+        >
+          ≣
+        </button>
 
         <div class="modal__cover-wrap">
           <img class="modal__cover" id="modal-cover" src="" alt="" />
@@ -289,7 +297,18 @@
 
         <div class="modal__body">
           <div class="modal__info">
-            <p class="modal__lyrics-label">Letra</p>
+            <p class="modal__lyrics-label">
+              Letra
+              <span
+                class="modal__sync-indicator"
+                id="modal-sync-indicator"
+                hidden
+              >
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+            </p>
             <h2 class="modal__track-title" id="modal-track-title"></h2>
             <p class="modal__track-artist" id="modal-track-artist"></p>
             <p class="modal__track-album" id="modal-track-album"></p>

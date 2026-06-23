@@ -11,7 +11,7 @@ import { renderQueue } from "./Queue.js";
 export function loadTrack(index) {
   runtime.currentIndex = index;
   const track = runtime.tracks[index];
-  dom.audio.src = track.src;
+  dom.audio.src = `${track.src}?_=${Date.now()}`;
   dom.audio.playbackRate = speeds[runtime.speedPos];
   dom.playerCover.src = track.cover;
   dom.playerCover.onerror = () => {
@@ -29,6 +29,7 @@ export function loadTrack(index) {
   saveState();
 
   updateMediaSession(track);
+  window.dispatchEvent(new CustomEvent("trackchanged"));
 }
 
 export function updateMediaSession(track) {
@@ -55,13 +56,17 @@ export function syncLikeButton() {
 export function playAudio() {
   dom.audio
     .play()
-    .catch(() =>
-      showToast("Add the matching MP3 file to /audio to play it."),
-    );
+    .catch(() => showToast("Add the matching MP3 file to /audio to play it."));
   dom.playButton.textContent = "⏸";
   dom.playButton.setAttribute("aria-label", "Pause");
   if ("mediaSession" in navigator)
     navigator.mediaSession.playbackState = "playing";
+  document
+    .getElementById("modal-sync-indicator")
+    ?.classList.remove("modal__sync-indicator--paused");
+  document
+    .querySelector(".track-list__row--playing")
+    ?.classList.remove("track-list__row--paused");
 }
 
 export function pauseAudio() {
@@ -70,6 +75,12 @@ export function pauseAudio() {
   dom.playButton.setAttribute("aria-label", "Play");
   if ("mediaSession" in navigator)
     navigator.mediaSession.playbackState = "paused";
+  document
+    .getElementById("modal-sync-indicator")
+    ?.classList.add("modal__sync-indicator--paused");
+  document
+    .querySelector(".track-list__row--playing")
+    ?.classList.add("track-list__row--paused");
 }
 
 export function togglePlay() {
@@ -100,8 +111,7 @@ export function playNext() {
 
 export function playPrev() {
   const prevIndex =
-    (runtime.currentIndex - 1 + runtime.tracks.length) %
-    runtime.tracks.length;
+    (runtime.currentIndex - 1 + runtime.tracks.length) % runtime.tracks.length;
   loadTrack(prevIndex);
   playAudio();
 }
@@ -141,6 +151,7 @@ dom.speedButton.addEventListener("click", () => {
 
 dom.volumeBar.addEventListener("input", () => {
   dom.audio.volume = dom.volumeBar.value / 100;
+  dom.volumeBar.style.setProperty("--fill", dom.volumeBar.value + "%");
   state.volume = Number(dom.volumeBar.value);
   saveState();
   if (dom.audio.volume === 0) {
@@ -156,8 +167,7 @@ dom.volumeBar.addEventListener("input", () => {
 
 dom.progressBar.addEventListener("input", () => {
   if (dom.audio.duration)
-    dom.audio.currentTime =
-      (dom.progressBar.value / 100) * dom.audio.duration;
+    dom.audio.currentTime = (dom.progressBar.value / 100) * dom.audio.duration;
 });
 
 // ===== <audio> events =====
@@ -183,10 +193,15 @@ function updateTimeDisplay() {
 
 dom.audio.addEventListener("timeupdate", () => {
   if (dom.audio.duration) {
-    dom.progressBar.value =
-      (dom.audio.currentTime / dom.audio.duration) * 100;
+    dom.progressBar.value = (dom.audio.currentTime / dom.audio.duration) * 100;
+    dom.progressBar.style.setProperty("--fill", dom.progressBar.value + "%");
     updateTimeDisplay();
     state.lastPosition = dom.audio.currentTime;
+    window.dispatchEvent(
+      new CustomEvent("timeupdate-sync", {
+        detail: { currentTime: dom.audio.currentTime },
+      }),
+    );
   }
 });
 

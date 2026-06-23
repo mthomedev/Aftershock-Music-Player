@@ -45,7 +45,7 @@ export function renderTrackList() {
       const playing = realIndex === runtime.currentIndex;
       return `
     <li class="track-list__row ${playing ? "track-list__row--playing" : ""}" data-id="${track.id}" data-real-index="${realIndex}" draggable="true">
-      <span class="track-list__index">${playing ? "♪" : index + 1}</span>
+    <span class="track-list__index">${playing ? "" : index + 1}</span>
       <img class="track-list__cover" src="${track.cover}" alt="${track.title} cover art" onerror="this.src='${FALLBACK_COVER}'">
       <button class="track-list__play" type="button">
         <span class="track-list__info">
