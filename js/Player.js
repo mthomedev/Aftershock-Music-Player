@@ -11,7 +11,7 @@ import { renderQueue } from "./Queue.js";
 export function loadTrack(index) {
   runtime.currentIndex = index;
   const track = runtime.tracks[index];
-  dom.audio.src = track.src;
+  dom.audio.src = `${track.src}?_=${Date.now()}`;
   dom.audio.playbackRate = speeds[runtime.speedPos];
   dom.playerCover.src = track.cover;
   dom.playerCover.onerror = () => {
@@ -185,6 +185,11 @@ dom.audio.addEventListener("timeupdate", () => {
     dom.progressBar.style.setProperty("--fill", dom.progressBar.value + "%");
     updateTimeDisplay();
     state.lastPosition = dom.audio.currentTime;
+    window.dispatchEvent(
+      new CustomEvent("timeupdate-sync", {
+        detail: { currentTime: dom.audio.currentTime },
+      }),
+    );
   }
 });
 

@@ -39,10 +39,30 @@ function applyModalGlow(r, g, b) {
     );
 }
 
-function showLyrics(lyrics) {
-  dom.modalLyricsLoading.hidden = true;
+function parseLRC(lrc) {
+  return lrc
+    .split("\n")
+    .map((line) => {
+      const match = line.match(/^\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/);
+      if (!match) return null;
+      const minutes = parseFloat(match[1]);
+      const seconds = parseFloat(match[2]);
+      const ms = parseFloat(match[3].padEnd(3, "0"));
+      const time = minutes * 60 + seconds + ms / 1000;
+      return { time, text: match[4].trim() };
+    })
+    .filter((line) => line !== null && line.text !== "");
+}
 
-  if (!lyrics) {
+let syncedLines = [];
+let activeLine = -1;
+
+function showLyrics(result) {
+  dom.modalLyricsLoading.hidden = true;
+  syncedLines = [];
+  activeLine = -1;
+
+  if (!result || (!result.synced && !result.plain)) {
     dom.modalLyricsEmpty.hidden = false;
     dom.modalLyrics.hidden = true;
     return;
@@ -50,8 +70,46 @@ function showLyrics(lyrics) {
 
   dom.modalLyricsEmpty.hidden = true;
   dom.modalLyrics.hidden = false;
-  dom.modalLyrics.textContent = lyrics;
+
+  if (result.synced) {
+    syncedLines = parseLRC(result.synced);
+    dom.modalLyrics.innerHTML = syncedLines
+      .map(
+        (line, i) =>
+          `<span class="lyric-line" data-index="${i}">${line.text}</span>`,
+      )
+      .join("\n");
+  } else {
+    dom.modalLyrics.textContent = result.plain;
+  }
 }
+
+function syncLyrics(currentTime) {
+  if (!syncedLines.length) return;
+
+  let current = -1;
+  for (let i = 0; i < syncedLines.length; i++) {
+    if (currentTime >= syncedLines[i].time) current = i;
+    else break;
+  }
+
+  if (current === activeLine) return;
+  activeLine = current;
+
+  dom.modalLyrics.querySelectorAll(".lyric-line").forEach((el, i) => {
+    el.classList.toggle("lyric-line--active", i === current);
+    el.classList.toggle("lyric-line--past", i < current);
+  });
+
+  if (current >= 0) {
+    const activeEl = dom.modalLyrics.querySelector(`[data-index="${current}"]`);
+    activeEl?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+}
+
+window.addEventListener("timeupdate-sync", (e) => {
+  if (!dom.nowPlayingModal.hidden) syncLyrics(e.detail.currentTime);
+});
 
 export async function openModal() {
   const track = runtime.tracks[runtime.currentIndex];
