@@ -53,3 +53,4 @@ export const modalLyricsLoading = document.getElementById(
   "modal-lyrics-loading",
 );
 export const modalLyricsEmpty = document.getElementById("modal-lyrics-empty");
+export const modalQueueButton = document.getElementById("modal-queue-button");

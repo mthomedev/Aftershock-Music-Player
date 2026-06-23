@@ -19,7 +19,6 @@
   display: none;
 }
 
-/* Quando o painel de fila está aberto */
 .app:has(#queue-panel:not([hidden])) ~ * .modal-overlay,
 body:has(#queue-panel:not([hidden])) .modal-overlay {
   right: 300px;
@@ -29,7 +28,7 @@ body:has(#queue-panel:not([hidden])) .modal-overlay {
 .modal {
   position: relative;
   width: 100%;
-  max-width: 1060px;
+  max-width: 1260px;
   max-height: 82vh;
   border-radius: 24px;
   overflow: hidden;
@@ -86,6 +85,35 @@ body:has(#queue-panel:not([hidden])) .modal-overlay {
   background: rgba(255, 255, 255, 0.15);
   color: #fff;
   transform: scale(1.08);
+}
+.modal__queue {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+.modal__queue:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  transform: scale(1.08);
+}
+.modal__queue[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
 }
 
 /* ── Cover ───────────────────────────────────────────────── */

@@ -102,3 +102,10 @@ export function refreshModal() {
 window.addEventListener("trackchanged", () => {
   if (!dom.nowPlayingModal.hidden) openModal();
 });
+
+dom.modalQueueButton.addEventListener("click", () => {
+  const willShow = dom.queuePanel.hidden;
+  dom.queuePanel.hidden = !willShow;
+  dom.queueToggleButton.setAttribute("aria-pressed", String(willShow));
+  dom.modalQueueButton.setAttribute("aria-pressed", String(willShow));
+});
