@@ -29,6 +29,7 @@ export function loadTrack(index) {
   saveState();
 
   updateMediaSession(track);
+  window.dispatchEvent(new CustomEvent("trackchanged"));
 }
 
 export function updateMediaSession(track) {

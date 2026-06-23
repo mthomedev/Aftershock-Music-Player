@@ -31,7 +31,6 @@ export async function fetchLyrics(artist, title) {
     const match = data[0];
     if (!match) return null;
 
-    // Prefere letra plana, senão limpa a sincronizada
     const raw = match.plainLyrics ?? match.syncedLyrics ?? null;
     const lyrics = raw ? raw.replace(/\[\d{2}:\d{2}\.\d{2}\]\s*/g, "") : null;
     lyricsCache.set(key, lyrics);

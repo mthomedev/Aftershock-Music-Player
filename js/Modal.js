@@ -94,3 +94,11 @@ dom.nowPlayingModal.addEventListener("click", (e) => {
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !dom.nowPlayingModal.hidden) closeModal();
 });
+
+export function refreshModal() {
+  if (!dom.nowPlayingModal.hidden) openModal();
+}
+
+window.addEventListener("trackchanged", () => {
+  if (!dom.nowPlayingModal.hidden) openModal();
+});
