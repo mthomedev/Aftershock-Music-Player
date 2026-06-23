@@ -121,7 +121,13 @@
   appearance: none;
   height: 4px;
   border-radius: 2px;
-  background: var(--border);
+  background: linear-gradient(
+    to right,
+    var(--accent) 0%,
+    var(--accent) var(--fill, 0%),
+    var(--border) var(--fill, 0%),
+    var(--border) 100%
+  );
   outline: none;
 }
 .progress-bar {

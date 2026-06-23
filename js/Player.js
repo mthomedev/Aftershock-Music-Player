@@ -55,9 +55,7 @@ export function syncLikeButton() {
 export function playAudio() {
   dom.audio
     .play()
-    .catch(() =>
-      showToast("Add the matching MP3 file to /audio to play it."),
-    );
+    .catch(() => showToast("Add the matching MP3 file to /audio to play it."));
   dom.playButton.textContent = "⏸";
   dom.playButton.setAttribute("aria-label", "Pause");
   if ("mediaSession" in navigator)
@@ -100,8 +98,7 @@ export function playNext() {
 
 export function playPrev() {
   const prevIndex =
-    (runtime.currentIndex - 1 + runtime.tracks.length) %
-    runtime.tracks.length;
+    (runtime.currentIndex - 1 + runtime.tracks.length) % runtime.tracks.length;
   loadTrack(prevIndex);
   playAudio();
 }
@@ -141,6 +138,7 @@ dom.speedButton.addEventListener("click", () => {
 
 dom.volumeBar.addEventListener("input", () => {
   dom.audio.volume = dom.volumeBar.value / 100;
+  dom.volumeBar.style.setProperty("--fill", dom.volumeBar.value + "%");
   state.volume = Number(dom.volumeBar.value);
   saveState();
   if (dom.audio.volume === 0) {
@@ -156,8 +154,7 @@ dom.volumeBar.addEventListener("input", () => {
 
 dom.progressBar.addEventListener("input", () => {
   if (dom.audio.duration)
-    dom.audio.currentTime =
-      (dom.progressBar.value / 100) * dom.audio.duration;
+    dom.audio.currentTime = (dom.progressBar.value / 100) * dom.audio.duration;
 });
 
 // ===== <audio> events =====
@@ -183,8 +180,8 @@ function updateTimeDisplay() {
 
 dom.audio.addEventListener("timeupdate", () => {
   if (dom.audio.duration) {
-    dom.progressBar.value =
-      (dom.audio.currentTime / dom.audio.duration) * 100;
+    dom.progressBar.value = (dom.audio.currentTime / dom.audio.duration) * 100;
+    dom.progressBar.style.setProperty("--fill", dom.progressBar.value + "%");
     updateTimeDisplay();
     state.lastPosition = dom.audio.currentTime;
   }
