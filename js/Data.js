@@ -24,35 +24,30 @@ function lyricsSet(key, value) {
   lyricsCache.set(key, value);
 }
 
-export async function fetchLyrics(artist, title) {
+export function fetchLyrics(artist, title) {
   const key = `${artist}__${title}`;
 
   if (lyricsCache.has(key)) return lyricsCache.get(key);
 
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
 
-    const res = await fetch(
-      `https://lrclib.net/api/search?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`,
-      { signal: controller.signal },
-    );
-    clearTimeout(timeout);
+  const promise = fetch(
+    `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`,
+    { signal: controller.signal },
+  )
+    .then(async (res) => {
+      clearTimeout(timeout);
+      if (!res.ok) return null;
+      const match = await res.json();
+      if (!match) return null;
+      return {
+        synced: match.syncedLyrics ?? null,
+        plain: match.plainLyrics ?? null,
+      };
+    })
+    .catch(() => null);
 
-    if (!res.ok) return null;
-
-    const data = await res.json();
-    const match = data[0];
-    if (!match) return null;
-
-    const result = {
-      synced: match.syncedLyrics ?? null,
-      plain: match.plainLyrics ?? null,
-    };
-
-    lyricsSet(key, result);
-    return result;
-  } catch {
-    return null;
-  }
+  lyricsSet(key, promise);
+  return promise;
 }

@@ -7,7 +7,7 @@
 import { runtime, FALLBACK_COVER } from "./Store.js";
 import { state, saveState } from "./State.js";
 import * as dom from "./Dom.js";
-import { fetchTracks, fetchLyrics } from "./Data.js";
+import { fetchTracks } from "./Data.js";
 import { getGreeting } from "./Utils.js";
 import { renderTrackList, applyFilters } from "./TrackList.js";
 import { renderPlaylists } from "./Playlists.js";
@@ -30,7 +30,19 @@ async function loadTracks() {
     runtime.visibleTracks = [...runtime.tracks];
 
     renderTrackList();
-    loadTrack(0);
+
+    if (state.lastTrackId) {
+      const lastIndex = runtime.tracks.findIndex(
+        (t) => t.id === state.lastTrackId,
+      );
+      if (lastIndex !== -1) {
+        loadTrack(lastIndex);
+      } else {
+        loadTrack(0);
+      }
+    } else {
+      loadTrack(0);
+    }
 
     console.log("Músicas carregadas:", runtime.tracks);
   } catch (error) {
@@ -54,28 +66,6 @@ function init() {
   renderQueue();
   applyFilters();
 
-  if (state.lastTrackId) {
-    const lastIndex = runtime.tracks.findIndex(
-      (t) => t.id === state.lastTrackId,
-    );
-    if (lastIndex !== -1) {
-      runtime.currentIndex = lastIndex;
-      const track = runtime.tracks[lastIndex];
-
-      dom.audio.src = track.src;
-      dom.playerCover.src = track.cover;
-      dom.playerCover.onerror = () => {
-        dom.playerCover.src = FALLBACK_COVER;
-      };
-      dom.playerTitle.textContent = track.title;
-      dom.playerArtist.textContent = `${track.artist} • ${track.album}`;
-
-      syncLikeButton();
-      applyFilters();
-      updateMediaSession(track);
-    }
-  }
-
   window.addEventListener("beforeunload", () => {
     if (runtime.currentIndex !== -1) saveState();
   });
@@ -83,7 +73,6 @@ function init() {
 
 init();
 
-// Persiste a posição periodicamente (throttled), não a cada timeupdate
 setInterval(() => {
   if (runtime.currentIndex !== -1 && !dom.audio.paused) saveState();
 }, 5000);

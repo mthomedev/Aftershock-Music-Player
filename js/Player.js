@@ -7,6 +7,7 @@ import * as dom from "./Dom.js";
 import { formatTime, showToast } from "./Utils.js";
 import { applyFilters, toggleLike } from "./TrackList.js";
 import { renderQueue } from "./Queue.js";
+import { fetchLyrics } from "./Data.js";
 
 export function loadTrack(index) {
   runtime.currentIndex = index;
@@ -30,6 +31,8 @@ export function loadTrack(index) {
 
   updateMediaSession(track);
   window.dispatchEvent(new CustomEvent("trackchanged"));
+
+  fetchLyrics(track.artist, track.title);
 }
 
 export function updateMediaSession(track) {
