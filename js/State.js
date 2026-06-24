@@ -21,6 +21,7 @@ function loadState() {
 }
 
 export const state = loadState();
+export const likedSet = new Set(state.likedIds);
 
 export function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));

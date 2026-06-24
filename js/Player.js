@@ -7,6 +7,30 @@ import * as dom from "./Dom.js";
 import { formatTime, showToast } from "./Utils.js";
 import { applyFilters, toggleLike } from "./TrackList.js";
 import { renderQueue } from "./Queue.js";
+import { fetchLyrics } from "./Data.js";
+
+function prefetchAdjacentLyrics(index) {
+  const n = runtime.tracks.length;
+  if (n === 0) return;
+
+  const indices = new Set([index]);
+
+  if (runtime.isShuffle) {
+    while (indices.size < Math.min(3, n)) {
+      indices.add(Math.floor(Math.random() * n));
+    }
+  } else {
+    indices.add((index + 1) % n);
+    indices.add((index - 1 + n) % n);
+  }
+
+  indices.forEach((i) => {
+    const t = runtime.tracks[i];
+    if (t) fetchLyrics(t.artist, t.title);
+  });
+
+  runtime.queue.slice(0, 2).forEach((t) => fetchLyrics(t.artist, t.title));
+}
 
 export function loadTrack(index) {
   runtime.currentIndex = index;
@@ -30,6 +54,8 @@ export function loadTrack(index) {
 
   updateMediaSession(track);
   window.dispatchEvent(new CustomEvent("trackchanged"));
+
+  prefetchAdjacentLyrics(index);
 }
 
 export function updateMediaSession(track) {
@@ -64,9 +90,6 @@ export function playAudio() {
   document
     .getElementById("modal-sync-indicator")
     ?.classList.remove("modal__sync-indicator--paused");
-  document
-    .querySelector(".track-list__row--playing")
-    ?.classList.remove("track-list__row--paused");
 }
 
 export function pauseAudio() {
@@ -78,9 +101,6 @@ export function pauseAudio() {
   document
     .getElementById("modal-sync-indicator")
     ?.classList.add("modal__sync-indicator--paused");
-  document
-    .querySelector(".track-list__row--playing")
-    ?.classList.add("track-list__row--paused");
 }
 
 export function togglePlay() {
@@ -124,6 +144,7 @@ dom.prevButton.addEventListener("click", playPrev);
 dom.shuffleButton.addEventListener("click", () => {
   runtime.isShuffle = !runtime.isShuffle;
   dom.shuffleButton.setAttribute("aria-pressed", String(runtime.isShuffle));
+  prefetchAdjacentLyrics(runtime.currentIndex);
 });
 
 dom.repeatButton.addEventListener("click", () => {

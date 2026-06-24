@@ -14,31 +14,55 @@ export async function fetchTracks() {
   return response.json();
 }
 
+const LYRICS_CACHE_MAX = 50;
 const lyricsCache = new Map();
 
-export async function fetchLyrics(artist, title) {
+function lyricsSet(key, value) {
+  if (lyricsCache.size >= LYRICS_CACHE_MAX) {
+    lyricsCache.delete(lyricsCache.keys().next().value);
+  }
+  lyricsCache.set(key, value);
+}
+
+export function fetchLyrics(artist, title) {
   const key = `${artist}__${title}`;
 
   if (lyricsCache.has(key)) return lyricsCache.get(key);
 
-  try {
-    const res = await fetch(
-      `https://lrclib.net/api/search?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`,
-    );
-    if (!res.ok) return null;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
 
-    const data = await res.json();
-    const match = data[0];
-    if (!match) return null;
+  const promise = fetch(
+    `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`,
+    { signal: controller.signal },
+  )
+    .then(async (res) => {
+      clearTimeout(timeout);
 
-    const result = {
-      synced: match.syncedLyrics ?? null,
-      plain: match.plainLyrics ?? null,
-    };
+      // Se /get não encontrou, tenta /search como fallback
+      if (!res.ok) {
+        const fallback = await fetch(
+          `https://lrclib.net/api/search?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`,
+        );
+        if (!fallback.ok) return null;
+        const data = await fallback.json();
+        const match = data[0];
+        if (!match) return null;
+        return {
+          synced: match.syncedLyrics ?? null,
+          plain: match.plainLyrics ?? null,
+        };
+      }
 
-    lyricsCache.set(key, result);
-    return result;
-  } catch {
-    return null;
-  }
+      const match = await res.json();
+      if (!match) return null;
+      return {
+        synced: match.syncedLyrics ?? null,
+        plain: match.plainLyrics ?? null,
+      };
+    })
+    .catch(() => null);
+
+  lyricsSet(key, promise);
+  return promise;
 }
