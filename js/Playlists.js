@@ -6,32 +6,37 @@ import { state, saveState } from "./State.js";
 import * as dom from "./Dom.js";
 import { getGreeting, showToast } from "./Utils.js";
 import { applyFilters } from "./TrackList.js";
+import { escapeHtml } from "./Utils.js";
 
 export function renderPlaylists() {
-  dom.playlistListEl.innerHTML = Object.entries(state.playlists)
-    .map(
-      ([name, ids]) => `
-    <li class="playlist-list__item ${runtime.currentView === "playlist" && runtime.activePlaylist === name ? "playlist-list__item--active" : ""}" data-playlist="${name}">
-      <button class="playlist-list__open" type="button" data-open-playlist="${name}">
-        <span>${name}</span>
+  const playlistNames = Object.keys(state.playlists);
+
+  dom.playlistListEl.innerHTML = playlistNames
+    .map((name, index) => {
+      const ids = state.playlists[name];
+      return `
+    <li class="playlist-list__item ${runtime.currentView === "playlist" && runtime.activePlaylist === name ? "playlist-list__item--active" : ""}" data-playlist-index="${index}">
+      <button class="playlist-list__open" type="button" data-open-playlist-index="${index}">
+        <span>${escapeHtml(name)}</span>
         <span class="playlist-list__count">${ids.length}</span>
       </button>
-      <button class="playlist-list__delete" type="button" data-delete-playlist="${name}" aria-label="Delete playlist ${name}">✕</button>
+      <button class="playlist-list__delete" type="button" data-delete-playlist-index="${index}" aria-label="Delete playlist ${escapeHtml(name)}">✕</button>
     </li>
-  `,
-    )
+  `;
+    })
     .join("");
 
   dom.playlistListEl
-    .querySelectorAll("[data-open-playlist]")
+    .querySelectorAll("[data-open-playlist-index]")
     .forEach((button) => {
       button.addEventListener("click", () => {
+        const name = playlistNames[Number(button.dataset.openPlaylistIndex)];
         runtime.currentView = "playlist";
-        runtime.activePlaylist = button.dataset.openPlaylist;
+        runtime.activePlaylist = name;
         document
           .querySelectorAll(".nav-link")
           .forEach((l) => l.classList.remove("nav-link--active"));
-        dom.heroTitleEl.textContent = runtime.activePlaylist;
+        dom.heroTitleEl.textContent = name;
         dom.heroSubtitleEl.textContent = "Tracks in this playlist";
         renderPlaylists();
         applyFilters();
@@ -39,15 +44,18 @@ export function renderPlaylists() {
     });
 
   dom.playlistListEl
-    .querySelectorAll("[data-delete-playlist]")
+    .querySelectorAll("[data-delete-playlist-index]")
     .forEach((button) => {
       button.addEventListener("click", (e) => {
         e.stopPropagation();
-        const name = button.dataset.deletePlaylist;
+        const name = playlistNames[Number(button.dataset.deletePlaylistIndex)];
         if (!confirm(`Delete the playlist "${name}"?`)) return;
         delete state.playlists[name];
         saveState();
-        if (runtime.currentView === "playlist" && runtime.activePlaylist === name) {
+        if (
+          runtime.currentView === "playlist" &&
+          runtime.activePlaylist === name
+        ) {
           runtime.currentView = "home";
           runtime.activePlaylist = null;
           dom.heroTitleEl.textContent = getGreeting();
@@ -76,7 +84,7 @@ export function renderPlaylists() {
         );
         if (!draggingRow) return;
         const id = draggingRow.dataset.id;
-        const name = item.dataset.playlist;
+        const name = playlistNames[Number(item.dataset.playlistIndex)];
         if (!state.playlists[name].includes(id)) {
           state.playlists[name].push(id);
           saveState();

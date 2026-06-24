@@ -25,4 +25,5 @@ export const runtime = {
 export const speeds = [1, 1.25, 1.5, 1.75, 0.75];
 
 // Capa usada quando o arquivo de capa da faixa não é encontrado
-export const FALLBACK_COVER = "https://picsum.photos/seed/tonal/200";
+export const FALLBACK_COVER =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23333'/%3E%3Cpath d='M100 60a30 30 0 100 60 30 30 0 000-60z' fill='%23999'/%3E%3C/svg%3E";

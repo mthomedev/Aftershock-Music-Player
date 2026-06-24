@@ -1,6 +1,7 @@
 import * as dom from "./Dom.js";
 import { fetchLyrics } from "./Data.js";
 import { runtime } from "./Store.js";
+import { escapeHtml } from "./Utils.js";
 
 function extractAccentFromImage(imgEl, callback) {
   const canvas = document.createElement("canvas");
@@ -25,7 +26,11 @@ function extractAccentFromImage(imgEl, callback) {
       Math.round(g / count),
       Math.round(b / count),
     );
-  } catch {
+  } catch (error) {
+    console.warn(
+      "Could not extract accent color (likely CORS-restricted image):",
+      error,
+    );
     callback(165, 28, 48);
   }
 }
@@ -78,7 +83,7 @@ function showLyrics(result) {
     dom.modalLyrics.innerHTML = syncedLines
       .map(
         (line, i) =>
-          `<span class="lyric-line" data-index="${i}">${line.text}</span>`,
+          `<span class="lyric-line" data-index="${i}">${escapeHtml(line.text)}</span>`,
       )
       .join("\n");
   } else {

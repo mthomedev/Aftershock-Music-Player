@@ -35,7 +35,11 @@ function prefetchAdjacentLyrics(index) {
 export function loadTrack(index) {
   runtime.currentIndex = index;
   const track = runtime.tracks[index];
-  dom.audio.src = `${track.src}?_=${Date.now()}`;
+  if (!track) {
+    console.warn(`loadTrack: no track at index ${index}`);
+    return;
+  }
+  dom.audio.src = track.src;
   dom.audio.playbackRate = speeds[runtime.speedPos];
   dom.playerCover.src = track.cover;
   dom.playerCover.onerror = () => {
@@ -46,7 +50,7 @@ export function loadTrack(index) {
   dom.playerArtist.textContent = `${track.artist} • ${track.album}`;
   syncLikeButton();
   applyFilters();
-  document.title = `${track.title} · ${track.artist} — Tonal`;
+  document.title = `${track.title} · ${track.artist} — Aftershock`;
 
   state.lastTrackId = track.id;
   state.lastPosition = 0;

@@ -3,6 +3,7 @@
 // =========================================================
 import { runtime, FALLBACK_COVER } from "./Store.js";
 import * as dom from "./Dom.js";
+import { escapeHtml } from "./Utils.js";
 
 export function renderQueue() {
   dom.queueEmptyStateEl.hidden = runtime.queue.length !== 0;
@@ -10,12 +11,12 @@ export function renderQueue() {
     .map(
       (track, i) => `
     <li class="queue-list__item" draggable="true" data-queue-index="${i}">
-    <img class="queue-list__cover" src="${track.cover}" alt="" loading="lazy" onerror="this.src='${FALLBACK_COVER}'">
+    <img class="queue-list__cover" src="${escapeHtml(track.cover)}" alt="" loading="lazy" onerror="this.src='${FALLBACK_COVER}'">
       <span class="queue-list__info">
-        <p class="queue-list__name">${track.title}</p>
-        <p class="queue-list__artist">${track.artist}</p>
+        <p class="queue-list__name">${escapeHtml(track.title)}</p>
+        <p class="queue-list__artist">${escapeHtml(track.artist)}</p>
       </span>
-      <button class="queue-list__remove" type="button" data-remove="${i}" aria-label="Remove ${track.title} from queue">✕</button>
+      <button class="queue-list__remove" type="button" data-remove="${i}" aria-label="Remove ${escapeHtml(track.title)} from queue">✕</button>
     </li>
   `,
     )

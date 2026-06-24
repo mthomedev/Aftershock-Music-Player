@@ -54,9 +54,7 @@
               + New
             </button>
           </div>
-          <ul class="playlist-list" id="playlist-list">
-            <!-- filled via JS -->
-          </ul>
+          <ul class="playlist-list" id="playlist-list"></ul>
         </section>
 
         <p class="sidebar__hint">
@@ -116,9 +114,7 @@
             <h2 id="library-title" class="library__title">Tracks</h2>
             <p class="library__count" id="library-count"></p>
           </div>
-          <ul class="track-list" id="track-list">
-            <!-- filled via JS -->
-          </ul>
+          <ul class="track-list" id="track-list"></ul>
           <p class="empty-state" id="empty-state" hidden>
             No tracks found. Try another search.
           </p>
@@ -137,9 +133,7 @@
             Clear
           </button>
         </div>
-        <ol class="queue-list" id="queue-list">
-          <!-- filled via JS -->
-        </ol>
+        <ol class="queue-list" id="queue-list"></ol>
         <p class="empty-state" id="queue-empty-state">
           Your queue is empty. Add tracks from each song's "⋮" menu.
         </p>
@@ -151,7 +145,7 @@
         <button
           class="player__cover-button"
           id="open-modal-button"
-          aria-label="Ver agora tocando"
+          aria-label="View now playing"
         >
           <img id="player-cover" class="player__cover" src="" alt="" />
         </button>
@@ -279,14 +273,14 @@
         aria-modal="true"
         aria-labelledby="modal-track-title"
       >
-        <button class="modal__close" id="modal-close" aria-label="Fechar">
+        <button class="modal__close" id="modal-close" aria-label="Close">
           ✕
         </button>
         <button
           class="modal__queue"
           id="modal-queue-button"
           type="button"
-          aria-label="Abrir fila"
+          aria-label="Open queue"
         >
           ≣
         </button>
@@ -298,7 +292,7 @@
         <div class="modal__body">
           <div class="modal__info">
             <p class="modal__lyrics-label">
-              Letra
+              Lyrics
               <span
                 class="modal__sync-indicator"
                 id="modal-sync-indicator"
@@ -316,10 +310,10 @@
 
           <div class="modal__lyrics-wrap">
             <p class="modal__lyrics-loading" id="modal-lyrics-loading" hidden>
-              Buscando letra...
+              Fetching lyrics...
             </p>
             <p class="modal__lyrics-empty" id="modal-lyrics-empty" hidden>
-              Letra não disponível.
+              Lyrics not available.
             </p>
             <pre class="modal__lyrics" id="modal-lyrics" hidden></pre>
           </div>

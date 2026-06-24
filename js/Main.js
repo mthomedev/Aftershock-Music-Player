@@ -8,7 +8,7 @@ import { runtime, FALLBACK_COVER } from "./Store.js";
 import { state, saveState } from "./State.js";
 import * as dom from "./Dom.js";
 import { fetchTracks, fetchLyrics } from "./Data.js";
-import { getGreeting } from "./Utils.js";
+import { getGreeting, showToast } from "./Utils.js";
 import { renderTrackList, applyFilters } from "./TrackList.js";
 import { renderPlaylists } from "./Playlists.js";
 import { renderQueue } from "./Queue.js";
@@ -46,7 +46,8 @@ async function loadTracks() {
 
     console.log("Músicas carregadas:", runtime.tracks);
   } catch (error) {
-    console.error("Erro ao carregar músicas:", error);
+    console.error(error);
+    showToast("Failed to load your library. Please refresh the page.");
   }
 }
 

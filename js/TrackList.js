@@ -34,51 +34,104 @@ export function applyFilters() {
   renderTrackList();
 }
 
+function renderContextMenuHtml(track) {
+  return `
+    <button class="context-menu__item" type="button" data-action="queue" data-id="${track.id}" role="menuitem">Add to queue</button>
+    <button class="context-menu__item" type="button" data-action="like" data-id="${track.id}" role="menuitem">${isLiked(track.id) ? "Remove from liked" : "Like"}</button>
+    ${
+      runtime.currentView === "playlist" && runtime.activePlaylist
+        ? `<button class="context-menu__item" type="button" data-action="remove-playlist" data-id="${track.id}" role="menuitem">Remove from "${escapeHtml(runtime.activePlaylist)}"</button>`
+        : ""
+    }
+    <hr class="context-menu__divider">
+    ${Object.keys(state.playlists)
+      .map(
+        (name) => `
+      <button class="context-menu__item" type="button" data-action="add-playlist" data-id="${track.id}" data-playlist="${escapeHtml(name)}" role="menuitem">Add to "${escapeHtml(name)}"</button>
+    `,
+      )
+      .join("")}
+  `;
+}
+
+function renderTrackRowHtml(track, index, realIndex, playing) {
+  return `
+    <li class="track-list__row ${playing ? "track-list__row--playing" : ""}" data-id="${track.id}" data-real-index="${realIndex}" draggable="true">
+      <span class="track-list__index">${playing ? "" : index + 1}</span>
+      <img class="track-list__cover" src="${escapeHtml(track.cover)}" alt="${escapeHtml(track.title)} cover art" loading="lazy" onerror="this.src='${FALLBACK_COVER}'">
+      <button class="track-list__play" type="button">
+        <span class="track-list__info">
+          <p class="track-list__name">${escapeHtml(track.title)}</p>
+          <p class="track-list__artist">${escapeHtml(track.artist)}</p>
+        </span>
+      </button>
+      <span class="track-list__duration">${isLiked(track.id) ? "♥" : ""}</span>
+      <span class="track-list__menu-wrap">
+        <button class="track-list__menu-button" type="button" data-menu-for="${track.id}" aria-haspopup="true" aria-expanded="false" aria-label="More options for ${escapeHtml(track.title)}">⋮</button>
+        <div class="context-menu" id="menu-${track.id}" hidden role="menu">
+          ${renderContextMenuHtml(track)}
+        </div>
+      </span>
+    </li>
+  `;
+}
+
+function updateTrackRow(row, track, index, realIndex, playing) {
+  row.dataset.realIndex = realIndex;
+  row.classList.toggle("track-list__row--playing", playing);
+
+  row.querySelector(".track-list__index").textContent = playing
+    ? ""
+    : index + 1;
+
+  row.querySelector(".track-list__duration").textContent = isLiked(track.id)
+    ? "♥"
+    : "";
+
+  const menu = row.querySelector(".context-menu");
+  if (menu) {
+    menu.innerHTML = renderContextMenuHtml(track);
+  }
+}
+
 export function renderTrackList() {
   dom.libraryCountEl.textContent = runtime.visibleTracks.length
     ? `${runtime.visibleTracks.length} track${runtime.visibleTracks.length > 1 ? "s" : ""}`
     : "";
   dom.emptyStateEl.hidden = runtime.visibleTracks.length !== 0;
 
-  dom.trackListEl.innerHTML = runtime.visibleTracks
-    .map((track, index) => {
-      const realIndex = runtime.tracks.findIndex((t) => t.id === track.id);
-      const playing = realIndex === runtime.currentIndex;
-      return `
-        <li class="track-list__row ${playing ? "track-list__row--playing" : ""}" data-id="${track.id}" data-real-index="${realIndex}" draggable="true">
-          <span class="track-list__index">${playing ? "" : index + 1}</span>
-          <img class="track-list__cover" src="${escapeHtml(track.cover)}" alt="${escapeHtml(track.title)} cover art" loading="lazy" onerror="this.src='${FALLBACK_COVER}'">
-          <button class="track-list__play" type="button">
-            <span class="track-list__info">
-              <p class="track-list__name">${escapeHtml(track.title)}</p>
-              <p class="track-list__artist">${escapeHtml(track.artist)}</p>
-            </span>
-          </button>
-          <span class="track-list__duration">${isLiked(track.id) ? "♥" : ""}</span>
-          <span class="track-list__menu-wrap">
-            <button class="track-list__menu-button" type="button" data-menu-for="${track.id}" aria-haspopup="true" aria-expanded="false" aria-label="More options for ${escapeHtml(track.title)}">⋮</button>
-            <div class="context-menu" id="menu-${track.id}" hidden role="menu">
-              <button class="context-menu__item" type="button" data-action="queue" data-id="${track.id}" role="menuitem">Add to queue</button>
-              <button class="context-menu__item" type="button" data-action="like" data-id="${track.id}" role="menuitem">${isLiked(track.id) ? "Remove from liked" : "Like"}</button>
-              ${
-                runtime.currentView === "playlist" && runtime.activePlaylist
-                  ? `<button class="context-menu__item" type="button" data-action="remove-playlist" data-id="${track.id}" role="menuitem">Remove from "${runtime.activePlaylist}"</button>`
-                  : ""
-              }
-              <hr class="context-menu__divider">
-              ${Object.keys(state.playlists)
-                .map(
-                  (name) => `
-                <button class="context-menu__item" type="button" data-action="add-playlist" data-id="${track.id}" data-playlist="${name}" role="menuitem">Add to "${name}"</button>
-              `,
-                )
-                .join("")}
-            </div>
-          </span>
-        </li>
-          `;
-    })
-    .join("");
+  const existingRows = new Map();
+  dom.trackListEl.querySelectorAll(".track-list__row").forEach((row) => {
+    existingRows.set(row.dataset.id, row);
+  });
+
+  const fragment = document.createDocumentFragment();
+
+  runtime.visibleTracks.forEach((track, index) => {
+    const realIndex = runtime.tracks.findIndex((t) => t.id === track.id);
+    const playing = realIndex === runtime.currentIndex;
+    const key = String(track.id);
+    const cached = existingRows.get(key);
+
+    if (cached) {
+      updateTrackRow(cached, track, index, realIndex, playing);
+      fragment.appendChild(cached);
+      existingRows.delete(key);
+    } else {
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = renderTrackRowHtml(
+        track,
+        index,
+        realIndex,
+        playing,
+      ).trim();
+      fragment.appendChild(wrapper.firstElementChild);
+    }
+  });
+
+  existingRows.forEach((row) => row.remove());
+
+  dom.trackListEl.appendChild(fragment);
 }
 
 export function toggleMenu(id) {
