@@ -30,7 +30,7 @@ export function fetchLyrics(artist, title) {
   if (lyricsCache.has(key)) return lyricsCache.get(key);
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 5000);
+  const timeout = setTimeout(() => controller.abort(), 20000);
 
   const promise = fetch(
     `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`,
@@ -38,7 +38,22 @@ export function fetchLyrics(artist, title) {
   )
     .then(async (res) => {
       clearTimeout(timeout);
-      if (!res.ok) return null;
+
+      // Se /get não encontrou, tenta /search como fallback
+      if (!res.ok) {
+        const fallback = await fetch(
+          `https://lrclib.net/api/search?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`,
+        );
+        if (!fallback.ok) return null;
+        const data = await fallback.json();
+        const match = data[0];
+        if (!match) return null;
+        return {
+          synced: match.syncedLyrics ?? null,
+          plain: match.plainLyrics ?? null,
+        };
+      }
+
       const match = await res.json();
       if (!match) return null;
       return {

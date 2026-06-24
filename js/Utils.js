@@ -2,7 +2,7 @@
 // UTILS
 // =========================================================
 import { toastEl } from "./Dom.js";
-import { state } from "./State.js";
+import { likedSet } from "./State.js";
 
 export function formatTime(seconds) {
   if (!isFinite(seconds) || seconds < 0) return "0:00";
@@ -24,7 +24,7 @@ export function showToast(message) {
 }
 
 export function isLiked(id) {
-  return state.likedIds.includes(id);
+  return likedSet.has(id);
 }
 
 export function getGreeting() {
@@ -32,4 +32,12 @@ export function getGreeting() {
   if (hour < 12) return "Good morning";
   if (hour < 18) return "Good afternoon";
   return "Good evening";
+}
+
+export function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }

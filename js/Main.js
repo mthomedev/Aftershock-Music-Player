@@ -7,7 +7,7 @@
 import { runtime, FALLBACK_COVER } from "./Store.js";
 import { state, saveState } from "./State.js";
 import * as dom from "./Dom.js";
-import { fetchTracks } from "./Data.js";
+import { fetchTracks, fetchLyrics } from "./Data.js";
 import { getGreeting } from "./Utils.js";
 import { renderTrackList, applyFilters } from "./TrackList.js";
 import { renderPlaylists } from "./Playlists.js";
