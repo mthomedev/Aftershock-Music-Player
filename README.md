@@ -58,12 +58,42 @@ Then open `http://localhost:8080`.
 ## File structure
 
 ```
-Tonal/
+Aftershock/
 ├── index.html
-├── style.css
-├── script.js
-├── audio/      ← your MP3 files
-└── covers/     ← your cover art (optional)
+├── Dockerfile
+├── compose.yaml
+├── assets/
+│   ├── songs.json       ← catálogo de faixas
+│   ├── audio/           ← arquivos MP3
+│   ├── covers/          ← capas dos álbuns
+│   └── images/          ← favicon e ícones
+├── css/
+│   ├── Tokens.css       ← variáveis de design (cores, fontes, raios)
+│   ├── Base.css         ← reset e estilos globais
+│   ├── Layout.css       ← grid principal
+│   ├── Main.css         ← área central (topbar, hero, biblioteca)
+│   ├── Sidebar.css      ← navegação lateral e playlists
+│   ├── Player.css       ← barra inferior de controles
+│   ├── TrackList.css    ← lista de faixas
+│   ├── Queue.css        ← painel de fila
+│   ├── Modal.css        ← modal "Now Playing" com letras
+│   ├── Components.css   ← toast, context menu, botões
+│   └── Responsive.css   ← breakpoints para mobile
+└── js/
+    ├── Main.js          ← entry point e inicialização
+    ├── Store.js         ← estado de runtime (não persistido)
+    ├── State.js         ← estado persistido (localStorage)
+    ├── Data.js          ← fetch de faixas e letras
+    ├── Player.js        ← lógica de reprodução
+    ├── TrackList.js     ← render e interações da lista
+    ├── Queue.js         ← render e interações da fila
+    ├── Playlists.js     ← render e interações das playlists
+    ├── Modal.js         ← modal Now Playing e sincronização de letras
+    ├── Navigation.js    ← troca de views (home, liked, playlist)
+    ├── Keyboard.js      ← atalhos de teclado
+    ├── Theme.js         ← alternância light/dark
+    ├── Dom.js           ← referências centralizadas ao DOM
+    └── Utils.js         ← formatTime, showToast, isLiked, getGreeting
 ```
 
 ## Improvements Applied

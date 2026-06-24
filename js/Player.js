@@ -64,9 +64,6 @@ export function playAudio() {
   document
     .getElementById("modal-sync-indicator")
     ?.classList.remove("modal__sync-indicator--paused");
-  document
-    .querySelector(".track-list__row--playing")
-    ?.classList.remove("track-list__row--paused");
 }
 
 export function pauseAudio() {
@@ -78,9 +75,6 @@ export function pauseAudio() {
   document
     .getElementById("modal-sync-indicator")
     ?.classList.add("modal__sync-indicator--paused");
-  document
-    .querySelector(".track-list__row--playing")
-    ?.classList.add("track-list__row--paused");
 }
 
 export function togglePlay() {

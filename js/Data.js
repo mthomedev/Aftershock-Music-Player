@@ -14,7 +14,15 @@ export async function fetchTracks() {
   return response.json();
 }
 
+const LYRICS_CACHE_MAX = 50;
 const lyricsCache = new Map();
+
+function lyricsSet(key, value) {
+  if (lyricsCache.size >= LYRICS_CACHE_MAX) {
+    lyricsCache.delete(lyricsCache.keys().next().value);
+  }
+  lyricsCache.set(key, value);
+}
 
 export async function fetchLyrics(artist, title) {
   const key = `${artist}__${title}`;
@@ -22,9 +30,15 @@ export async function fetchLyrics(artist, title) {
   if (lyricsCache.has(key)) return lyricsCache.get(key);
 
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
     const res = await fetch(
       `https://lrclib.net/api/search?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`,
+      { signal: controller.signal },
     );
+    clearTimeout(timeout);
+
     if (!res.ok) return null;
 
     const data = await res.json();
@@ -36,7 +50,7 @@ export async function fetchLyrics(artist, title) {
       plain: match.plainLyrics ?? null,
     };
 
-    lyricsCache.set(key, result);
+    lyricsSet(key, result);
     return result;
   } catch {
     return null;
