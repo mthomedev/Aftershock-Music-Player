@@ -9,7 +9,7 @@
 // com eles (preencher o runtime, renderizar a lista, carregar a
 // primeira faixa) é o Main.js, para não duplicar a lógica.
 export async function fetchTracks() {
-  const response = await fetch("./assets/songs.json");
+  const response = await fetch("/api/tracks");
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   return response.json();
 }

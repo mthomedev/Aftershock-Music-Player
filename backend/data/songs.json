@@ -5,7 +5,7 @@
     "artist": "Sleeping With Sirens",
     "album": "Let's Cheers To This",
     "cover": "./assets/covers/IYCH.jpg",
-    "src": "./assets/audio/01-if-you-cant-hang.mp3"
+    "file": "01-if-you-cant-hang.mp3"
   },
   {
     "id": "t2",
@@ -13,7 +13,7 @@
     "artist": "Pierce The Veil",
     "album": "A Lesson In Romantics",
     "cover": "./assets/covers/Circles.jpg",
-    "src": "./assets/audio/02-circles.mp3"
+    "file": "02-circles.mp3"
   },
   {
     "id": "t3",
@@ -21,7 +21,7 @@
     "artist": "Linkin Park",
     "album": "From Zero",
     "cover": "./assets/covers/FZ.jpg",
-    "src": "./assets/audio/03-good-things-go.mp3"
+    "file": "03-good-things-go.mp3"
   },
   {
     "id": "t4",
@@ -29,7 +29,7 @@
     "artist": "Limp Bizkit",
     "album": "Nate Dogg's Last Party",
     "cover": "./assets/covers/Rollin.jpg",
-    "src": "./assets/audio/04-rollin.mp3"
+    "file": "04-rollin.mp3"
   },
   {
     "id": "t5",
@@ -37,7 +37,7 @@
     "artist": "Papa Roach",
     "album": "Devil May Cry S2 Official Soundtrack",
     "cover": "./assets/covers/SUIH.jpg",
-    "src": "./assets/audio/05-see-u-in-hell.mp3"
+    "file": "05-see-u-in-hell.mp3"
   },
   {
     "id": "t6",
@@ -45,7 +45,7 @@
     "artist": "Evanescence",
     "album": "Devil May Cry S1 Official Soundtrack",
     "cover": "./assets/covers/Afterlife.jpg",
-    "src": "./assets/audio/06-afterlife.mp3"
+    "file": "06-afterlife.mp3"
   },
   {
     "id": "t7",
@@ -53,6 +53,6 @@
     "artist": "Slipknot",
     "album": "The Subliminal Verses",
     "cover": "./assets/covers/Vermilion.jpg",
-    "src": "./assets/audio/07-vermilion-pt-2.mp3"
+    "file": "07-vermilion-pt-2.mp3"
   }
 ]
