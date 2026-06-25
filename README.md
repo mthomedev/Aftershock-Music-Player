@@ -2,31 +2,53 @@
 
 A fully functional music player clone, built with semantic HTML, `id` reserved for JavaScript, and `class` for styling.
 
-Five tracks are already wired up and working: _If You Can't Hang_ (Sleeping With Sirens), _Circles_ (Pierce The Veil), _Good Things Go_ (Linkin Park), _Rollin'_ (Limp Bizkit), and _See U in Hell_ (Papa Roach).
+Seven tracks are already wired up and working: _If You Can't Hang_ (Sleeping With Sirens), _Circles_ (Pierce The Veil), _Good Things Go_ (Linkin Park), _Rollin'_ (Limp Bizkit), _See U in Hell_ (Papa Roach), _Afterlife_ (Evanescence), and _Vermilion Pt. 2_ (Slipknot).
+
+The project is split into two independent services:
+
+- **`frontend/`** — static client (HTML/CSS/JS) served by nginx. Knows nothing about MP3 files; it only talks to the API.
+- **`backend/`** — Express API that owns the audio files and streams them on demand (with HTTP Range support, so seeking works without re-downloading the whole track).
+
+## Running with Docker (recommended)
+
+\`\`\`bash
+docker compose up --build
+\`\`\`
+
+Then open `http://localhost:8080`. The frontend container proxies every `/api/*` request to the backend container internally, so no extra configuration is needed.
+
+## Running without Docker
+
+**Backend:**
+
+\`\`\`bash
+cd backend
+npm install
+npm run dev
+\`\`\`
+
+API available at `http://localhost:3001`.
+
+**Frontend:** since the frontend now depends on the API (not on local files), serve it through a tool that can proxy `/api/*` to the backend, or simply use Docker Compose as above to avoid CORS/proxy setup by hand.
 
 ## Adding more songs
 
-1. Drop the MP3 file into the `audio/` folder (rename it to something without spaces, accents, or quotes, e.g. `06-track-name.mp3`).
-2. Drop the cover art (optional) into `covers/`.
-3. Add a new object to the `tracks` array at the top of `script.js`:
+1. Drop the MP3 file into `backend/data/audio/` (rename it to something without spaces, accents, or quotes, e.g. `08-track-name.mp3`).
+2. Drop the cover art (optional) into `frontend/assets/covers/`.
+3. Add a new object to `backend/data/songs.json`:
 
-```js
-{ id: "t6", title: "Track name", artist: "Artist", album: "Album", cover: "covers/your-cover.jpg", src: "audio/06-track-name.mp3" },
-```
+\`\`\`json
+{
+  "id": "t8",
+  "title": "Track name",
+  "artist": "Artist",
+  "album": "Album",
+  "cover": "./assets/covers/your-cover.jpg",
+  "file": "08-track-name.mp3"
+}
+\`\`\`
 
-The `id` must be unique among tracks (t1, t2, t3...).
-
-## Why run a local server (recommended)
-
-Some browsers block audio loaded from `file://` URLs. If a song won't load when you open `index.html` directly, run a local server from the project folder:
-
-```bash
-python3 -m http.server 8080
-# or
-npx serve .
-```
-
-Then open `http://localhost:8080`.
+The `id` must be unique among tracks (t1, t2, t3...). Note the `file` field — it's just the filename inside `backend/data/audio/`; the API builds the actual streaming URL (`/api/tracks/:id/stream`) automatically.
 
 ## Features
 
@@ -51,53 +73,77 @@ Then open `http://localhost:8080`.
 - Light/dark theme with persistence
 - State saved to `localStorage`: likes, playlists, theme, volume, last track and position
 - Keyboard shortcuts: `Space` play/pause · `←`/`→` seek 5s · `M` mute · `L` like · `N`/`P` next/previous
-- Toast warning when an expected MP3 hasn't been added to the `audio/` folder yet
+- Toast warning when the requested track's audio file can't be streamed from the API
 - Fully responsive
 - Accessible: labels, `aria-pressed`/`aria-expanded`, visible focus, skip link, keyboard-navigable menus
 
 ## File structure
 
-```
-Aftershock/
-├── index.html
-├── Dockerfile
+\`\`\`
+Aftershock-Music-Player/
 ├── compose.yaml
-├── assets/
-│   ├── songs.json       ← catálogo de faixas
-│   ├── audio/           ← arquivos MP3
-│   ├── covers/          ← capas dos álbuns
-│   └── images/          ← favicon e ícones
-├── css/
-│   ├── Tokens.css       ← variáveis de design (cores, fontes, raios)
-│   ├── Base.css         ← reset e estilos globais
-│   ├── Layout.css       ← grid principal
-│   ├── Main.css         ← área central (topbar, hero, biblioteca)
-│   ├── Sidebar.css      ← navegação lateral e playlists
-│   ├── Player.css       ← barra inferior de controles
-│   ├── TrackList.css    ← lista de faixas
-│   ├── Queue.css        ← painel de fila
-│   ├── Modal.css        ← modal "Now Playing" com letras
-│   ├── Components.css   ← toast, context menu, botões
-│   └── Responsive.css   ← breakpoints para mobile
-└── js/
-    ├── Main.js          ← entry point e inicialização
-    ├── Store.js         ← estado de runtime (não persistido)
-    ├── State.js         ← estado persistido (localStorage)
-    ├── Data.js          ← fetch de faixas e letras
-    ├── Player.js        ← lógica de reprodução
-    ├── TrackList.js     ← render e interações da lista
-    ├── Queue.js         ← render e interações da fila
-    ├── Playlists.js     ← render e interações das playlists
-    ├── Modal.js         ← modal Now Playing e sincronização de letras
-    ├── Navigation.js    ← troca de views (home, liked, playlist)
-    ├── Keyboard.js      ← atalhos de teclado
-    ├── Theme.js         ← alternância light/dark
-    ├── Dom.js           ← referências centralizadas ao DOM
-    └── Utils.js         ← formatTime, showToast, isLiked, getGreeting
-```
+├── README.md
+├── frontend/
+│   ├── index.html
+│   ├── Dockerfile
+│   ├── nginx.conf        ← proxies /api/* to the backend container
+│   ├── assets/
+│   │   ├── covers/       ← album artwork
+│   │   └── images/       ← favicon and icons
+│   ├── css/
+│   │   ├── Tokens.css    ← design variables (colors, fonts, radii)
+│   │   ├── Base.css      ← reset and global styles
+│   │   ├── Layout.css    ← main grid
+│   │   ├── Main.css      ← central area (topbar, hero, library)
+│   │   ├── Sidebar.css   ← side navigation and playlists
+│   │   ├── Player.css    ← bottom control bar
+│   │   ├── TrackList.css ← track list
+│   │   ├── Queue.css     ← queue panel
+│   │   ├── Modal.css     ← "Now Playing" modal with lyrics
+│   │   ├── Components.css← toast, context menu, buttons
+│   │   └── Responsive.css← mobile breakpoints
+│   └── js/
+│       ├── Main.js       ← entry point and initialization
+│       ├── Store.js      ← runtime state (not persisted)
+│       ├── State.js      ← persisted state (localStorage)
+│       ├── Data.js       ← fetches tracks from the API and lyrics
+│       ├── Player.js     ← playback logic
+│       ├── TrackList.js  ← track list rendering and interactions
+│       ├── Queue.js      ← queue rendering and interactions
+│       ├── Playlists.js  ← playlist rendering and interactions
+│       ├── Modal.js      ← Now Playing modal and lyrics sync
+│       ├── Navigation.js ← view switching (home, liked, playlist)
+│       ├── Keyboard.js   ← keyboard shortcuts
+│       ├── Theme.js      ← light/dark toggle
+│       ├── Dom.js        ← centralized DOM references
+│       └── Utils.js      ← formatTime, showToast, isLiked, getGreeting
+└── backend/
+    ├── index.js          ← Express app entry point
+    ├── Dockerfile
+    ├── package.json
+    ├── routes/
+    │   └── tracks.js     ← GET /api/tracks and GET /api/tracks/:id/stream
+    └── data/
+        ├── songs.json    ← track catalog
+        └── audio/        ← MP3 files (never exposed directly to the client)
+\`\`\`
+
+## API
+
+The backend exposes two endpoints:
+
+| Method | Endpoint                  | Description                                              |
+|--------|----------------------------|------------------------------------------------------------|
+| GET    | `/api/tracks`              | Returns the full track catalog, with `src` pointing to the streaming endpoint |
+| GET    | `/api/tracks/:id/stream`   | Streams the MP3 file for the given track id. Supports HTTP `Range` requests (`206 Partial Content`), so seeking works without downloading the whole file |
+
+The frontend never accesses MP3 files directly — it only reads URLs returned by the API.
 
 ## Improvements Applied
 
 - Added SVG favicon
 - Improved SEO metadata (title and description)
 - Better project branding (Aftershock)
+- Decoupled the frontend from MP3 files: audio is now served through a dedicated Express API instead of static files
+- Added HTTP Range support for proper seeking during streaming
+- Split the project into independent `frontend/` and `backend/` services, each with its own Dockerfile
