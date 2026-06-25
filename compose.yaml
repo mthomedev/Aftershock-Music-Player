@@ -1,7 +1,16 @@
 services:
-  aftershock:
-    build: .
+  backend:
+    build: ./backend
+    container_name: aftershock-api
+    expose:
+      - "3001"
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
     container_name: aftershock
     ports:
       - "8080:80"
+    depends_on:
+      - backend
     restart: unless-stopped

@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aftershock - Music Player</title>
+    <meta
+      name="description"
+      content="Aftershock, a rock-focused music player built with HTML, CSS and JavaScript."
+    />
+    <link rel="icon" type="image/svg+xml" href="./assets/images/favicon.svg" />
+
+    <link rel="stylesheet" href="./css/Tokens.css" />
+    <link rel="stylesheet" href="./css/Base.css" />
+    <link rel="stylesheet" href="./css/Layout.css" />
+    <link rel="stylesheet" href="./css/Sidebar.css" />
+    <link rel="stylesheet" href="./css/Main.css" />
+    <link rel="stylesheet" href="./css/TrackList.css" />
+    <link rel="stylesheet" href="./css/Queue.css" />
+    <link rel="stylesheet" href="./css/Player.css" />
+    <link rel="stylesheet" href="./css/Components.css" />
+    <link rel="stylesheet" href="./css/Modal.css" />
+    <link rel="stylesheet" href="./css/Responsive.css" />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
+    <div class="app">
+      <nav class="sidebar" aria-label="Main navigation">
+        <header class="brand">
+          <span class="brand__mark" aria-hidden="true">◐</span>
+          <span class="brand__name">Aftershock</span>
+        </header>
+
+        <ul class="nav-list">
+          <li>
+            <a href="#" class="nav-link nav-link--active" data-view="home"
+              ><span aria-hidden="true">⌂</span> Home</a
+            >
+          </li>
+          <li>
+            <a href="#" class="nav-link" data-view="liked"
+              ><span aria-hidden="true">♡</span> Liked</a
+            >
+          </li>
+        </ul>
+
+        <section class="playlists" aria-labelledby="playlists-heading">
+          <div class="playlists__header">
+            <h2 id="playlists-heading" class="playlists__title">
+              Your playlists
+            </h2>
+            <button id="new-playlist-button" class="text-button" type="button">
+              + New
+            </button>
+          </div>
+          <ul class="playlist-list" id="playlist-list"></ul>
+        </section>
+
+        <p class="sidebar__hint">
+          Use a track's "⋮" menu to add it to a playlist or to the queue.
+        </p>
+      </nav>
+
+      <main class="main" id="main-content">
+        <header class="topbar">
+          <form class="search" role="search" id="search-form">
+            <label for="search-input" class="visually-hidden"
+              >Search songs or artists</label
+            >
+            <input
+              type="search"
+              id="search-input"
+              class="search__input"
+              placeholder="Search songs, artists..."
+            />
+          </form>
+          <div class="topbar__actions">
+            <button
+              id="theme-toggle"
+              class="icon-button"
+              type="button"
+              aria-pressed="false"
+              aria-label="Switch to light theme"
+            >
+              ☾
+            </button>
+            <button
+              id="queue-toggle-button"
+              class="icon-button"
+              type="button"
+              aria-pressed="false"
+              aria-label="Show queue"
+            >
+              ≣
+            </button>
+            <div class="profile" aria-hidden="true">U</div>
+          </div>
+        </header>
+
+        <section class="hero" id="hero-section" aria-labelledby="hero-title">
+          <h1 id="hero-title" class="hero__title">Good evening</h1>
+          <p class="hero__subtitle" id="hero-subtitle">
+            Pick up where you left off
+          </p>
+        </section>
+
+        <section
+          class="library"
+          id="library-section"
+          aria-labelledby="library-title"
+        >
+          <div class="library__header">
+            <h2 id="library-title" class="library__title">Tracks</h2>
+            <p class="library__count" id="library-count"></p>
+          </div>
+          <ul class="track-list" id="track-list"></ul>
+          <p class="empty-state" id="empty-state" hidden>
+            No tracks found. Try another search.
+          </p>
+        </section>
+      </main>
+
+      <aside
+        class="queue-panel"
+        id="queue-panel"
+        aria-labelledby="queue-title"
+        hidden
+      >
+        <div class="queue-panel__header">
+          <h2 id="queue-title" class="queue-panel__title">Up next</h2>
+          <button id="clear-queue-button" class="text-button" type="button">
+            Clear
+          </button>
+        </div>
+        <ol class="queue-list" id="queue-list"></ol>
+        <p class="empty-state" id="queue-empty-state">
+          Your queue is empty. Add tracks from each song's "⋮" menu.
+        </p>
+      </aside>
+    </div>
+
+    <footer class="player" id="player">
+      <section class="player__now-playing" aria-label="Now playing">
+        <button
+          class="player__cover-button"
+          id="open-modal-button"
+          aria-label="View now playing"
+        >
+          <img id="player-cover" class="player__cover" src="" alt="" />
+        </button>
+        <div class="player__meta">
+          <p id="player-title" class="player__track-title">Select a track</p>
+          <p id="player-artist" class="player__track-artist">—</p>
+        </div>
+        <button
+          id="like-button"
+          class="icon-button"
+          type="button"
+          aria-pressed="false"
+          aria-label="Like track"
+        >
+          ♡
+        </button>
+      </section>
+
+      <section class="player__controls" aria-label="Playback controls">
+        <div class="player__buttons">
+          <button
+            id="shuffle-button"
+            class="icon-button"
+            type="button"
+            aria-pressed="false"
+            aria-label="Shuffle"
+          >
+            ⤨
+          </button>
+          <button
+            id="prev-button"
+            class="icon-button"
+            type="button"
+            aria-label="Previous track"
+          >
+            ⏮
+          </button>
+          <button
+            id="play-button"
+            class="icon-button icon-button--primary"
+            type="button"
+            aria-label="Play"
+          >
+            ▶
+          </button>
+          <button
+            id="next-button"
+            class="icon-button"
+            type="button"
+            aria-label="Next track"
+          >
+            ⏭
+          </button>
+          <button
+            id="repeat-button"
+            class="icon-button"
+            type="button"
+            aria-pressed="false"
+            aria-label="Repeat"
+          >
+            ↻
+          </button>
+        </div>
+        <div class="player__progress">
+          <span id="time-current" class="player__time">0:00</span>
+          <label for="progress-bar" class="visually-hidden"
+            >Track progress</label
+          >
+          <input
+            type="range"
+            id="progress-bar"
+            class="progress-bar"
+            value="0"
+            min="0"
+            max="100"
+            step="0.1"
+          />
+          <span
+            id="time-duration"
+            class="player__time player__time--toggle"
+            role="button"
+            tabindex="0"
+            title="Click to show time remaining"
+            >0:00</span
+          >
+        </div>
+      </section>
+
+      <section class="player__volume" aria-label="Volume and speed controls">
+        <button
+          id="speed-button"
+          class="text-button text-button--player"
+          type="button"
+          aria-label="Playback speed"
+          title="Playback speed"
+        >
+          1x
+        </button>
+        <button
+          id="mute-button"
+          class="icon-button"
+          type="button"
+          aria-pressed="false"
+          aria-label="Mute"
+        >
+          🕪
+        </button>
+        <label for="volume-bar" class="visually-hidden">Volume</label>
+        <input
+          type="range"
+          id="volume-bar"
+          class="volume-bar"
+          value="80"
+          min="0"
+          max="100"
+          step="1"
+        />
+      </section>
+    </footer>
+
+    <div class="modal-overlay" id="now-playing-modal" hidden>
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-track-title"
+      >
+        <button class="modal__close" id="modal-close" aria-label="Close">
+          ✕
+        </button>
+        <button
+          class="modal__queue"
+          id="modal-queue-button"
+          type="button"
+          aria-label="Open queue"
+        >
+          ≣
+        </button>
+
+        <div class="modal__cover-wrap">
+          <img class="modal__cover" id="modal-cover" src="" alt="" />
+        </div>
+
+        <div class="modal__body">
+          <div class="modal__info">
+            <p class="modal__lyrics-label">
+              Lyrics
+              <span
+                class="modal__sync-indicator"
+                id="modal-sync-indicator"
+                hidden
+              >
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+            </p>
+            <h2 class="modal__track-title" id="modal-track-title"></h2>
+            <p class="modal__track-artist" id="modal-track-artist"></p>
+            <p class="modal__track-album" id="modal-track-album"></p>
+          </div>
+
+          <div class="modal__lyrics-wrap">
+            <p class="modal__lyrics-loading" id="modal-lyrics-loading" hidden>
+              Fetching lyrics...
+            </p>
+            <p class="modal__lyrics-empty" id="modal-lyrics-empty" hidden>
+              Lyrics not available.
+            </p>
+            <pre class="modal__lyrics" id="modal-lyrics" hidden></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <audio id="audio-element" preload="metadata"></audio>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="./js/Main.js"></script>
+  </body>
+</html>
